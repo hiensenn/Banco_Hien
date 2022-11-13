@@ -24,6 +24,15 @@ function operation(){
 
     if(action === 'Criar Conta'){
         createAccount();
+    }else if(action === 'Depositar'){
+        deposit();
+    }else if(action === 'Consultar Saldo'){
+
+    }else if(action === 'Sacar'){
+
+    }else if(action === 'Sair'){
+        console.log(chalk.bgBlue.black('Obrigado por usar nosso banco digital!'))
+        process.exit()
     }
 
 })
@@ -70,4 +79,37 @@ function buildAccount(){
         console.log(chalk.bgGreen.white('Parabéns, a sua conta foi criada!'))
         operation();
     }).catch(err => console.log(err));
+}
+
+//add an amount to user account
+
+function deposit(){
+    inquirer.prompt([
+        {
+            name: 'accountName',
+            message: 'Qual o nome da sua conta ?'
+        }
+    ])
+    .then((answer) => {
+
+        const accountName = answer['accountName']
+
+        //verify if accounts exists
+
+        if(!checkAccount(accountName)){
+            return deposit()
+        }
+
+    })
+    .catch(err => console.log(err))
+}
+
+function checkAccount(accountName){
+    if(!fs.existsSync(`accounts/${accountName}.json`)){
+        console.log(chalk.bgRed.black('Essa conta não existe!'))
+        console.log(chalk.bgRed.black('Tente novamente!'))
+
+        return false
+    }
+    return true
 }
