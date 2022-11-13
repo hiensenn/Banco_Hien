@@ -19,7 +19,8 @@ function operation(){
             'Sacar',
             'Sair'],
     },
-]).then((answer) => {
+])
+.then((answer) => {
     const action = answer['action'];
 
     if(action === 'Criar Conta'){
@@ -55,7 +56,8 @@ function buildAccount(){
             message: 'Digite um nome para a sua conta : ',
 
         },
-    ]).then((answer) => {
+    ])
+    .then((answer) => {
         const accountName = answer['accountName'];
         console.info(accountName);
 
@@ -78,7 +80,8 @@ function buildAccount(){
         )
         console.log(chalk.bgGreen.white('Parabéns, a sua conta foi criada!'))
         operation();
-    }).catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
 }
 
 //add an amount to user account
@@ -100,6 +103,21 @@ function deposit(){
             return deposit()
         }
 
+        inquirer.prompt([
+            {
+                name: 'amount', 
+                message: 'quanto você deseja depositar ? ',
+            },
+        ])
+        .then((answer) => {
+            const  amount = answer['amount']
+
+            //add a amount
+            addAmount(accountName, amount);
+            operation()
+        })
+        .catch(err => console.log(err))
+
     })
     .catch(err => console.log(err))
 }
@@ -113,3 +131,34 @@ function checkAccount(accountName){
     }
     return true
 }
+
+function addAmount(accountName, amount){
+
+    const accountData = getAccount(accountName)
+    if(!amount){
+        console.log(chalk.bgRed.black('Ocorreu um erro, tente novamente mais tarde'))
+
+        return deposit();
+    }
+
+    // console.log(account)
+
+    accountData.balance = parseFloat(amount) + parseFloat(accountData.balance)
+    fs.writeFileSync(
+        `accounts/${accountName}.json`,
+        JSON.stringify(accountData),
+        function(err){
+            console.log(err)
+        },
+    )
+        console.log(chalk.green(`foi depositado o valor de R$${amount} na sua conta!`),)
+        
+
+function getAccount(accountName){
+    const accountJSON = fs.readFileSync(`accounts/${accountName}.json`, {
+        encoding: 'utf-8',
+        flag: 'r'
+    })
+
+    return JSON.parse(accountJSON)
+}}
